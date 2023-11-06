@@ -30,7 +30,7 @@ def findImages(keyword):
     # 크롬 드라이버 설정
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    #chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
+    chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
     chrome_options.add_argument('window-size=1920x1080')
     chrome_options.add_argument("disable-gpu")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
@@ -49,8 +49,10 @@ def findImages(keyword):
     while True:
         # 스크롤 아래로 내림
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
         # 새로운 페이지가 load되기를 기다림
         time.sleep(SCROLL_PAUSE_TIME)
+
         # 새로운 스크롤 높이 구하여 이전 스크롤 높이와 비교
         new_height = driver.execute_script("return document.body.scrollHeight")
         if new_height == last_height:
@@ -86,6 +88,8 @@ def findImages(keyword):
 
             # 이미지 파일 저장
             urllib.request.urlretrieve(imgUrl, f'{dir}{str(count)}.jpg')
+
+            if (count % 50==0): print('Downloaded {} images'.format(count))
             count = count + 1
         except Exception as e:
             # 암호화된 이미지는 무시
@@ -100,7 +104,6 @@ def main():
     keyword = input('Search Images : ')
     findImages(keyword)
     exit()
-
 
 if __name__ == "__main__":
 	main()

@@ -4,7 +4,7 @@
 from torchvision import utils
 from torchvision import datasets
 import torchvision.transforms as transforms
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader,Dataset
 import os
 from PIL import Image, UnidentifiedImageError,ImageFile
 
@@ -28,8 +28,16 @@ def validate_image(filepath):
         return False
     else:
         return True
+    
+def predict_set(filepath):
+    print("분류")
 
-class CustomDataset(torch.utils.data.Dataset): 
+
+def train_set(filepath):
+    print("학습")
+
+
+class CustomDataset(Dataset): 
   def __init__(self): #데이터셋의 전처리를 해주는 부분
      a=1
   def __len__(self): #데이터셋의 길이. 즉, 총 샘플의 수를 적어주는 부분

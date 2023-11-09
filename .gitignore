@@ -1,2 +1,4 @@
 dataset/*
+crawled/*
 *.pyc
+*.pth

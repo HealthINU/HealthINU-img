@@ -22,7 +22,7 @@ def findImages(keyword):
     url = 'https://www.google.com/imghp'
 
     # 저장할 폴더 생성
-    dir = ".\dataset"
+    dir = ".\crawled"
     createFolder(dir)
     dir += "\\" + keyword + "\\"
     createFolder(dir)

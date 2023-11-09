@@ -178,11 +178,12 @@ def train_set(filepath):
         train_loss, train_acc = model_train(model, train_loader, loss_fn, optimizer, device)
 
         # 검증 손실과 검증 정확도를 반환 함
-        val_loss, val_acc = model_evaluate(model, test_loader, loss_fn, device)   
+        val_loss, val_acc = model_eval(model, test_loader, loss_fn, device)   
             
         # val_loss 가 개선되었다면 min_loss를 갱신하고 model의 가중치(weights)를 저장 함
         if val_loss < min_loss:
             print(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!')
+
             min_loss = val_loss
             torch.save(model.state_dict(), f'{model_name}.pth')
             
@@ -193,7 +194,7 @@ def train_set(filepath):
     model.load_state_dict(torch.load(f'{model_name}.pth'))
 
     # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출 함
-    final_loss, final_acc = model_evaluate(model, test_loader, loss_fn, device)
+    final_loss, final_acc = model_eval(model, test_loader, loss_fn, device)
     print(f'evaluation loss: {final_loss:.5f}, evaluation accuracy: {final_acc:.5f}')
 
 
@@ -274,7 +275,7 @@ def model_train(model, data_loader, loss_fn, optimizer, device):
     return running_loss / len(data_loader.dataset), acc
 
 
-def model_evaluate(model, data_loader, loss_fn, device):
+def model_eval(model, data_loader, loss_fn, device):
     # model.eval()은 모델을 평가모드로 설정을 바꿈
     # dropout과 같은 layer의 역할 변경을 위하여 evaluation 진행시 꼭 필요한 절차임
     model.eval()

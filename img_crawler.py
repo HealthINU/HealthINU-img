@@ -17,10 +17,14 @@ def createFolder(dir):
         os.makedirs(dir)
 
 
-def findImages(keyword):
+def findImages(keyword, url_mod):
     # URL 설정
     url = 'https://www.google.com/imghp'
 
+    # URL 모드일경우 덮어 씌우게 하기
+    if(url_mod):
+        url = input("Enter your url : ")
+    
     # 저장할 폴더 생성
     dir = ".\crawled"
     createFolder(dir)
@@ -30,17 +34,19 @@ def findImages(keyword):
     # 크롬 드라이버 설정
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
+    #chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
     chrome_options.add_argument('window-size=1920x1080')
     chrome_options.add_argument("disable-gpu")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get(url)
     driver.implicitly_wait(time_to_wait=10)
 
-    # 검색 후 엔터
-    keyElement = driver.find_element(By.NAME, "q")
-    keyElement.send_keys(keyword)
-    keyElement.send_keys(Keys.RETURN)
+    # URL 모드가 아닐경우
+    # 검색어를 검색 후 엔터
+    if(not url_mod):
+        keyElement = driver.find_element(By.NAME, "q")
+        keyElement.send_keys(keyword)
+        keyElement.send_keys(Keys.RETURN)
 
     # 많은 이미지를 구하기 위해 스크롤 내려야 함
     SCROLL_PAUSE_TIME = 1
@@ -87,7 +93,7 @@ def findImages(keyword):
             urllib.request.install_opener(opener)
 
             # 이미지 파일 저장
-            urllib.request.urlretrieve(imgUrl, f'{dir}{str(count)}.jpg')
+            urllib.request.urlretrieve(imgUrl, f'{dir}{str(count)}.png')
 
             if (count % 50==0): print('Downloaded {} images'.format(count))
             count = count + 1
@@ -101,8 +107,9 @@ def findImages(keyword):
 
 
 def main():
-    keyword = input('Search Images : ')
-    findImages(keyword)
+    keyword = input('Enter Image Folder Name : ')
+    url_mod = True
+    findImages(keyword, url_mod)
     exit()
 
 if __name__ == "__main__":

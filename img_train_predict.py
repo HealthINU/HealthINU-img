@@ -89,7 +89,16 @@ def predict_set(filepath):
     percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
     labels[index[0]], percentage[index[0]].item()
 
-    print("{0}, {1}".format(labels[index[0]],percentage[index[0]].item()))
+    print("분류 결과 : {0}, {1}".format(labels[index[0]],percentage[index[0]].item()))
+
+    _, indices = torch.sort(out, descending=True)
+    print("---"*12)
+    for idx in indices[0][:len(labels)]:
+        print("{0}){1}, {2}".format(idx, labels[idx], percentage[idx].item()))
+    print("---"*12)
+        
+
+
 
 
 def train_set(filepath):

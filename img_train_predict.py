@@ -81,7 +81,6 @@ def predict_set(filepath):
     # unsqueeze
     batch_t = torch.unsqueeze(img_t, 0)
     out = model(batch_t.to(device))
-    out
 
     # 최대값 뽑기
     _, index = torch.max(out, 1)

@@ -76,7 +76,7 @@ def findImages(keyword, url_mod):
     for image in images:
         try:
             image.click()
-            time.sleep(0.5)
+            time.sleep(2)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(
@@ -93,7 +93,7 @@ def findImages(keyword, url_mod):
             urllib.request.install_opener(opener)
 
             # 이미지 파일 저장
-            urllib.request.urlretrieve(imgUrl, f'{dir}{str(count)}.png')
+            urllib.request.urlretrieve(imgUrl, f'{dir}{str(count)}.jpg')
 
             if (count % 50==0): print('Downloaded {} images'.format(count))
             count = count + 1

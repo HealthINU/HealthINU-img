@@ -14,7 +14,7 @@ def main():
         exit()
 
     # 학습인 경우
-    if(sys.argv[1]=="!train!"):
+    if(sys.argv[1]=="!train"):
          print("이미지 학습 시작")
          train_set('./dataset')
 

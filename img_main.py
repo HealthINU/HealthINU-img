@@ -6,20 +6,11 @@ import torch
 from img_train_predict import train_set, predict_set, validate_image
 
 def main():
-    print("이미지 학습 시작")
-    train_set('.\\dataset')
-        
-    print("이미지 학습 종료")
-    exit()
-    """
     # 인수 있는지 확인
     try:
         print(sys.argv[1])
     except:
-        print("이미지 학습 시작")
-        train_set('./dataset')
-        
-        input("아무 키나 입력해서 종료 : ")
+        print("인수 없음")
         exit()
 
     # 학습인 경우
@@ -30,10 +21,10 @@ def main():
     # 이미지 오염 여부 확인
     if(validate_image(sys.argv[1])):
         print("이미지 분류 시작")
-        #predict_set(sys.argv[1]) # 아직구현안됨
-    else: print("이미지가 손상됨")
-    """
-    input("아무 키나 입력해서 종료 : ")
+        predict_set(sys.argv[1])
+    else: print("이미지 문제 발생")
+
+    print("종료")
     exit()
 
 if __name__ == "__main__":

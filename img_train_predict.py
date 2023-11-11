@@ -35,21 +35,62 @@ def validate_image(filepath):
         img = Image.open(filepath).convert('RGB') 
         img.load()
     except UnidentifiedImageError: # corrupt 된 이미지는 해당 에러 출력
-        print(f'Corrupted Image is found at: {filepath}')
+        print(f'오염된 이미지 오류: {filepath}')
         return False
     except (IOError, OSError): # Truncated (잘린) 이미지에 대한 에러 출력
-        print(f'Truncated Image is found at: {filepath}')
+        print(f'잘린 이미지 오류: {filepath}')
         return False
     else:
         return True
     
 def predict_set(filepath):
-    print("분류")
+    # device 설정 (cuda:0 혹은 cpu 사용)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(device)
+
     #파일명 비어있을 경우
     if(len(filepath)==0):
         return
+    img = Image.open(filepath)
+    
+    # 라벨 불러오기
+    with open('./img_classes.txt') as file:
+        labels = [line.strip() for line in file.readlines()]
+    
+    model = models.resnet101(weights="DEFAULT") 
+    fc = nn.Sequential(
+        nn.Linear(2048, 256), # 모델의 features의 출력이 7X7, 512장 이기 때문에 in_features=7*7*512 로 설정 함
+        nn.ReLU(), 
+        nn.Linear(256, 64), 
+        nn.ReLU(), 
+        nn.Linear(64, 3), # 현재 3개 클래스 분류이기 때문에 3로 out_features=3로 설정 함
+    )
+    model.fc = fc
+    model.to(device)
+    model.load_state_dict(torch.load('./model-pretrained.pth'))
+    model.eval()
+    # 이미지 전처리
+    preprocess = transforms.Compose([
+        transforms.Resize((224, 224)),  
+        transforms.ToTensor(), 
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+    # 전처리 실행
+    img_t = preprocess(img)
 
-   
+    # unsqueeze
+    batch_t = torch.unsqueeze(img_t, 0)
+    out = model(batch_t.to(device))
+    out
+
+    # 최대값 뽑기
+    _, index = torch.max(out, 1)
+
+    # 라벨과 퍼센티지
+    percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
+    labels[index[0]], percentage[index[0]].item()
+
+    print("{0}, {1}".format(labels[index[0]],percentage[index[0]].item()))
 
 
 def train_set(filepath):
@@ -74,6 +115,7 @@ def train_set(filepath):
 
     folders = glob.glob('.\\dataset\\*')
     print(folders)
+    
 
     # train: test ratio. 0.3로 설정시 test set의 비율은 20%로 설정됨
     test_size = 0.2
@@ -82,8 +124,12 @@ def train_set(filepath):
     train_images = []
     test_images = []
 
+    # 텍스트 파일 저장용
+    labels_txt = ""
+
     for folder in folders:
         label = os.path.basename(folder)
+        labels_txt += label + "\n"
 
         files = sorted(glob.glob(folder + '\\*'))
 
@@ -97,6 +143,10 @@ def train_set(filepath):
 
         train_images.extend(train)
         test_images.extend(test)
+
+    # 라벨 저장
+    with open('./img_classes.txt','w+') as file:
+        file.write(labels_txt)
 
     # train, test 전체 이미지 셔플
     random.shuffle(train_images)

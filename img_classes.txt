@@ -1,0 +1,3 @@
+bench_press_machine
+lat_pull_down_machine
+leg_extension_machine

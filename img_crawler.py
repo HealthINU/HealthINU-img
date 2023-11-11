@@ -76,7 +76,7 @@ def findImages(keyword, url_mod):
     for image in images:
         try:
             image.click()
-            time.sleep(2)
+            time.sleep(2.5)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(
@@ -93,7 +93,7 @@ def findImages(keyword, url_mod):
             urllib.request.install_opener(opener)
 
             # 이미지 파일 저장
-            urllib.request.urlretrieve(imgUrl, f'{dir}{str(count)}.jpg')
+            urllib.request.urlretrieve(imgUrl, f'{dir}{keyword}_{str(count)}.jpg')
 
             if (count % 50==0): print('Downloaded {} images'.format(count))
             count = count + 1
@@ -102,6 +102,7 @@ def findImages(keyword, url_mod):
             # print('Error : ', e)
             pass
     
+    print('Download Complete')
     # 크롬 드라이버 종료
     driver.close()
 

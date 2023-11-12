@@ -3,8 +3,6 @@
 # torchvision 관련 라이브러리들을 import
 import torch
 from tqdm import tqdm
-from torchvision import utils
-from torchvision import datasets
 from torchvision import models
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader,Dataset
@@ -42,7 +40,8 @@ def validate_image(filepath):
         return False
     else:
         return True
-    
+
+# 개별 이미지 판별
 def predict_set(filepath):
     # device 설정 (cuda:0 혹은 cpu 사용)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -98,9 +97,7 @@ def predict_set(filepath):
     print("---"*12)
         
 
-
-
-
+# 학습
 def train_set(filepath):
     # device 설정 (cuda:0 혹은 cpu 사용)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -121,7 +118,7 @@ def train_set(filepath):
                 # corrupted 된 이미지 제거함
                 os.remove(img)
 
-    folders = glob.glob('.\\dataset\\*')
+    folders = glob.glob(filepath+'\\*')
     print(folders)
     
 
@@ -218,7 +215,7 @@ def train_set(filepath):
     model.to(device)
 
     # 옵티마이저를 정의 옵티마이저에는 model.parameters()를 지정해야 함
-    optimizer = optim.Adam(model.parameters(), lr=0.0005)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # 손실함수(loss function)을 지정합니다. Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정했음
     loss_fn = nn.CrossEntropyLoss()

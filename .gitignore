@@ -1,5 +1,6 @@
 dataset/*
 dataset*
 crawled/*
+desc/*
 *.pyc
 *.pth

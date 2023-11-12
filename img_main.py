@@ -17,12 +17,14 @@ def main():
     if(sys.argv[1]=="!train"):
          print("이미지 학습 시작")
          train_set('./dataset')
-
-    # 이미지 오염 여부 확인
-    if(validate_image(sys.argv[1])):
-        print("이미지 분류 시작")
-        predict_set(sys.argv[1])
-    else: print("이미지 문제 발생")
+         
+    # 학습이 아닌 경우
+    else:
+        # 이미지 오염 여부 확인
+        if(validate_image(sys.argv[1])):
+            print("이미지 분류 시작")
+            predict_set(sys.argv[1])
+        else: print("이미지 문제 발생")
 
     print("종료")
     exit()

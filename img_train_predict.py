@@ -253,7 +253,7 @@ def train_set(filepath):
 
     # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출 함
     final_loss, final_acc = model_eval(model, test_loader, loss_fn, device)
-    print(f'evaluation loss: {final_loss:.5f}, evaluation accuracy: {final_acc:.5f}')
+    print(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}')
 
 
 class CustomDataset(Dataset): 

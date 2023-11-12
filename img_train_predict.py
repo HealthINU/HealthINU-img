@@ -96,16 +96,36 @@ def predict_set(filepath):
         print("{0}){1}, {2}".format(idx, labels[idx], percentage[idx].item()))
     print("---"*12)
         
+# 시드 고정 함수
+def fix_seed():
+    # PyTorch의 랜덤시드 고정
+    torch.manual_seed(0)
+    torch.cuda.manual_seed(0)
+    torch.cuda.manual_seed_all(0) # gpu가 1개 이상일 경우
+
+    # Numpy 랜덤시드 고정
+    np.random.seed(0)
+
+    # CuDNN 랜덤시드 고정
+    torch.backends.cudnn.benchmark = False
+    # torch.backends.cudnn.deterministic = True # 연산 처리 속도가 줄어들어서 보통 연구 후반기에 사용함
+
+    # 파이썬 랜덤시드 고정
+    random.seed(SEED)
+
 
 # 학습
 def train_set(filepath):
     # device 설정 (cuda:0 혹은 cpu 사용)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
+
     # image 데이터셋 root 폴더
     root = filepath
-
     dirs = os.listdir(root)
+
+    # 시드 고정
+    fix_seed()
 
     for dir_ in dirs:
         folder_path = os.path.join(root, dir_)
@@ -118,7 +138,7 @@ def train_set(filepath):
                 # corrupted 된 이미지 제거함
                 os.remove(img)
 
-    folders = glob.glob(filepath+'\\*')
+    folders = glob.glob(root+'\\*')
     print(folders)
     
 
@@ -132,14 +152,14 @@ def train_set(filepath):
     # 텍스트 파일 저장용
     labels_txt = ""
 
+    # 폴더 별로 for문
     for folder in folders:
         label = os.path.basename(folder)
         labels_txt += label + "\n"
 
         files = sorted(glob.glob(folder + '\\*'))
 
-        # 각 Label별 이미지 데이터셋 셔플
-        random.seed(SEED)
+        # 각 라벨마다 이미지 데이터셋 셔플
         random.shuffle(files)
 
         idx = int(len(files) * test_size)
@@ -165,10 +185,11 @@ def train_set(filepath):
     test_labels = [f.split('\\')[2] for f in test_images]
 
     print('==='*12)
-    print(f'train images: {len(train_images)}')
-    print(f'train labels: {len(train_labels)}')
-    print(f'test images: {len(test_images)}')
-    print(f'test labels: {len(test_labels)}')
+    print(f'[Dataset INFO]')
+    print(f'Train images: {len(train_images)}')
+    print(f'Train labels: {len(train_labels)}')
+    print(f'Test images: {len(test_images)}')
+    print(f'Test labels: {len(test_labels)}')
     print('==='*12)
 
     # Image Augmentation
@@ -179,7 +200,6 @@ def train_set(filepath):
         transforms.ToTensor(), 
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-
     test_transform = transforms.Compose([
         transforms.Resize((224, 224)),      
         transforms.ToTensor(), 
@@ -198,47 +218,50 @@ def train_set(filepath):
     # ResNet101 모델 생성
     model = models.resnet101(weights="DEFAULT") 
 
-    # 가중치를 Freeze 하여 학습시 업데이트가 일어나지 않도록 설정 함
+    # 가중치를 Freeze 하여 학습시 업데이트가 일어나지 않도록 설정
     for param in model.parameters():
         param.requires_grad = False  # 가중치 Freeze
 
-    # Fully-Connected Layer를 Sequential로 생성하여 pretrained 모델의 'Classifier'에 연결 함
+    # Fully-Connected Layer를 Sequential로 생성하여 pretrained 모델의 'Classifier'에 연결
     fc = nn.Sequential(
-        nn.Linear(2048, 256), # 모델의 features의 출력이 7X7, 512장 이기 때문에 in_features=7*7*512 로 설정 함
+        nn.Linear(2048, 256), # 모델의 features의 출력이 1X1, 2048장 이기 때문에 in_features=1*1*2048 로 설정
         nn.ReLU(), 
         nn.Linear(256, 64), 
         nn.ReLU(), 
-        nn.Linear(64, 3), # 현재 3개 클래스 분류이기 때문에 3로 out_features=3로 설정 함
+        nn.Linear(64, 3), # 현재 3개 클래스 분류이기 때문에 3로 out_features = 3으로 설정
     )
 
     model.fc = fc
     model.to(device)
 
-    # 옵티마이저를 정의 옵티마이저에는 model.parameters()를 지정해야 함
+    # 옵티마이저를 정의 
+    # 옵티마이저에는 model.parameters()를 지정해야 함
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-    # 손실함수(loss function)을 지정합니다. Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정했음
+    # 손실함수(loss function)을 지정
+    # Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정했음
     loss_fn = nn.CrossEntropyLoss()
 
     # 최대 Epoch을 지정
     num_epochs = 10
     model_name = 'model-pretrained'
 
+    # 최소 loss를 inf으로 설정
     min_loss = np.inf
 
     # Epoch 별 훈련 및 검증을 수행 함
     for epoch in range(num_epochs):
-        # Model Training
-        # 훈련 손실과 정확도를 반환 함
+        # 모델 훈련
+
+        # 훈련 손실과 정확도를 반환
         train_loss, train_acc = model_train(model, train_loader, loss_fn, optimizer, device)
 
-        # 검증 손실과 검증 정확도를 반환 함
+        # 검증 손실과 검증 정확도를 반환
         val_loss, val_acc = model_eval(model, test_loader, loss_fn, device)   
             
-        # val_loss 가 개선되었다면 min_loss를 갱신하고 model의 가중치(weights)를 저장 함
+        # val_loss가 개선되었다면 min_loss를 갱신 후 model의 가중치(weights)를 저장
         if val_loss < min_loss:
             print(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!')
-
             min_loss = val_loss
             torch.save(model.state_dict(), f'{model_name}.pth')
             
@@ -248,7 +271,7 @@ def train_set(filepath):
     # 모델에 저장한 가중치를 로드
     model.load_state_dict(torch.load(f'{model_name}.pth'))
 
-    # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출 함
+    # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출
     final_loss, final_acc = model_eval(model, test_loader, loss_fn, device)
     print(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}')
 

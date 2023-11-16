@@ -66,7 +66,13 @@ def predict_set(filepath):
     )
     model.fc = fc
     model.to(device)
-    model.load_state_dict(torch.load('./model-pretrained.pth'))
+    
+    # cuda 여부에 따라 다르게 load
+    if torch.cuda.is_available():
+        model.load_state_dict(torch.load('./model-pretrained.pth'))
+    else:
+        model.load_state_dict(torch.load('./model-pretrained.pth', map_location=torch.device('cpu')))
+
     model.eval()
     # 이미지 전처리
     preprocess = transforms.Compose([
@@ -216,13 +222,18 @@ def train_set(filepath):
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=True, num_workers=8)
     
     # ResNet101 모델 생성
+    # Convolutional layer - "필터"는 이미지를 통과하여 한 번에 몇 Pixel(NxN)을 스캔하고 각 형상이 속하는 클래스를 예측하는 형상 맵을 만듦
     model = models.resnet101(weights="DEFAULT") 
 
     # 가중치를 Freeze 하여 학습시 업데이트가 일어나지 않도록 설정
     for param in model.parameters():
         param.requires_grad = False  # 가중치 Freeze
 
+
     # Fully-Connected Layer를 Sequential로 생성하여 pretrained 모델의 'Classifier'에 연결
+    # Convolution/Pooling 네트워크 프로세스의 최종 결과를 취해서 
+    # 분류 결정에 도달하는 완전히 연결된 계층(Fully-Connected Layer)
+    # 2차원의 배열 형태 이미지를 1차원의 평탄화 작업을 통해 이미지를 분류하는데 사용되는 계층
     fc = nn.Sequential(
         nn.Linear(2048, 256), # 모델의 features의 출력이 1X1, 2048장 이기 때문에 in_features=1*1*2048 로 설정
         nn.ReLU(), 
@@ -230,7 +241,6 @@ def train_set(filepath):
         nn.ReLU(), 
         nn.Linear(64, 3), # 현재 3개 클래스 분류이기 때문에 3로 out_features = 3으로 설정
     )
-
     model.fc = fc
     model.to(device)
 
@@ -239,7 +249,7 @@ def train_set(filepath):
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # 손실함수(loss function)을 지정
-    # Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정했음
+    # Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정함
     loss_fn = nn.CrossEntropyLoss()
 
     # 최대 Epoch을 지정

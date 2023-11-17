@@ -47,6 +47,9 @@ def predict_set(filepath):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
 
+    # 결과 {운동기구 : 가중치}
+    result_dict = {}
+
     #파일명 비어있을 경우
     if(len(filepath)==0):
         return
@@ -100,7 +103,10 @@ def predict_set(filepath):
     print("---"*12)
     for idx in indices[0][:len(labels)]:
         print("{0}){1}, {2}".format(idx, labels[idx], percentage[idx].item()))
+        result_dict[labels[idx]] = percentage[idx].item()
     print("---"*12)
+
+    return result_dict
         
 # 시드 고정 함수
 def fix_seed():

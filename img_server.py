@@ -28,7 +28,9 @@ class ProcessImage(Resource):
             if validate_image(image_path): 
                 print("이미지 분류 시작")
                 result_dict = predict_set(image_path)
-                top3_result_dict = {k: result_dict[k] for k in list(result_dict.keys())[:3]} # 상위 3개 
+                top3_result_dict = []
+                for k in list(result_dict.keys())[:3]: # 상위 3개 
+                    top3_result_dict.append({"name" : k, "prob": result_dict[k]})
                 return {"message": "Image processed successfully!","result": top3_result_dict}, 200 # JSON 형식으로 변환해서 전송
             else:
                 return {"error": "Invalid image"}, 400

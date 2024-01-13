@@ -81,7 +81,7 @@ def findImages(keyword, url_mod):
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(
                 By.XPATH,
-                '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div[3]/div[1]/a/img[1]'
+                '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div/div[3]/div[1]/a/img'
             ).get_attribute("src")
 
             # 오프너로 열기
@@ -94,6 +94,7 @@ def findImages(keyword, url_mod):
 
             # 이미지 파일 저장
             urllib.request.urlretrieve(imgUrl, f'{dir}{keyword}_{str(count)}.jpg')
+            #print(imgUrl)
 
             if (count % 50==0): print('Downloaded {} images'.format(count))
             count = count + 1

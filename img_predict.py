@@ -1,5 +1,5 @@
 # 추론용
-# 클래스화 및 스레드 지원 필요
+# 클래스화 및 스레드 지원(?) 필요
 
 # torchvision 관련 라이브러리들을 import
 import torch
@@ -20,7 +20,7 @@ def predict_set(filepath):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    # 결과 {운동기구 : 가중치}
+    # 결과 {운동기구 : 가중치} 형태임
     result_dict = {}
 
     #파일명 비어있을 경우

@@ -1,9 +1,9 @@
 # 메인맨
 import sys
-import torch
 
 # 학습함수, 테스트함수 불러오기
-from img_train_predict import train_set, predict_set, validate_image
+from img_train import train_set, validate_image
+from img_predict import predict_set
 
 def main():
     # 인수 있는지 확인

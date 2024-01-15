@@ -6,8 +6,9 @@ import torch
 from flask import Flask, request
 from flask_restx import Api, Resource
 
-# 학습함수, 테스트함수 불러오기
-from img_train_predict import train_set, predict_set, validate_image
+# 이미지 검증 함수 및 테스트 함수 불러오기
+from img_train import validate_image
+from img_predict import predict_set
 
 # API 서버를 구축하기 위한 기본 구조
 app = Flask(__name__)

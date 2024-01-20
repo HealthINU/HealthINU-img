@@ -8,12 +8,16 @@ from flask_restx import Api, Resource
 
 # 이미지 검증 함수 및 테스트 함수 불러오기
 from img_train import validate_image
-from img_predict import predict_set
+from img_predict import ImageClassifier
 
 # API 서버를 구축하기 위한 기본 구조
 app = Flask(__name__)
 app.config['WTF_CSRF_ENABLED'] = False
 api = Api(app)
+
+# ImageClassifier 클래스 인스턴스 생성
+classifier = ImageClassifier()
+print("Model loaded successfully!")
 
 # 이미지 처리
 @api.route('/process')
@@ -28,7 +32,7 @@ class ProcessImage(Resource):
         if image_path:
             if validate_image(image_path): 
                 print("이미지 분류 시작")
-                result_dict = predict_set(image_path)
+                result_dict = classifier.predict(image_path)
                 top3_result_dict = []
                 for k in list(result_dict.keys())[:3]: # 상위 3개 
                     top3_result_dict.append({"name" : k, "prob": result_dict[k]})

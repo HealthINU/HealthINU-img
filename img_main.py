@@ -3,7 +3,7 @@ import sys
 
 # 학습함수, 테스트함수 불러오기
 from img_train import train_set, validate_image
-from img_predict import predict_set
+from img_predict import ImageClassifier
 
 def main():
     # 인수 있는지 확인
@@ -28,7 +28,12 @@ def main():
         # 이미지 오염 여부 확인
         if(validate_image(sys.argv[1])):
             print("이미지 분류 시작")
-            predict_set(sys.argv[1])
+            # ImageClassifier 클래스 인스턴스 생성
+            classifier = ImageClassifier()
+
+            # 이미지 파일에 대한 예측 수행
+            result = classifier.predict(sys.argv[1])
+            print(result)
         else: print("이미지 문제 발생")
 
     print("종료")

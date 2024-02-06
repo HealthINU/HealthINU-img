@@ -62,6 +62,15 @@ def fix_seed():
 
 # 학습
 def train_set(filepath):
+    # 로그 폴더 생성
+    if not os.path.exists('log'):
+        os.makedirs('log')
+
+    # 로그 파일 생성
+    from datetime import datetime 
+    s = datetime.now().strftime("log/%Y%m%d_%H%M%S_train_log.txt") 
+    print(s) # 20XX0XXX_XX27_train_log.txt 의 이름으로 저장됨
+
     # device 설정 (cuda:0 혹은 cpu 사용)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -73,19 +82,29 @@ def train_set(filepath):
     # 시드 고정
     fix_seed()
 
+
+    # 폴더별로 이미지 데이터셋을 살펴보고, 오염된 이미지를 제거
     for dir_ in dirs:
         folder_path = os.path.join(root, dir_)
         files = os.listdir(folder_path)
-        
         images = [os.path.join(folder_path, f) for f in files]
         for img in images:
             valid = validate_image(img)
             if not valid:
                 # corrupted 된 이미지 제거함
                 os.remove(img)
-
+    
+    # 폴더 경로를 리스트로 저장
     folders = glob.glob(root+'\\*')
     print(folders)
+    print("%d folders found".format(len(folders)))
+
+    with open(s, "a") as file:
+        file.write("-------------------------------------- \n")
+        for folder in folders:
+            file.write(folder)
+            file.write("\n")
+        file.write("--------------------------------------\n")
     
 
     # train: test ratio. 0.3로 설정시 test set의 비율은 20%로 설정됨
@@ -179,13 +198,14 @@ def train_set(filepath):
         nn.ReLU(), 
         nn.Linear(256, 64), 
         nn.ReLU(), 
-        nn.Linear(64, 3), # 현재 3개 클래스 분류이기 때문에 3로 out_features = 3으로 설정
+        nn.Linear(64, len(folders)), # 폴더 갯수만큼 
     )
     model.fc = fc
     model.to(device)
 
     # 옵티마이저를 정의 
     # 옵티마이저에는 model.parameters()를 지정해야 함
+    # 학습률 (learning rate)은 0.0001로 설정
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # 손실함수(loss function)을 지정
@@ -193,7 +213,7 @@ def train_set(filepath):
     loss_fn = nn.CrossEntropyLoss()
 
     # 최대 Epoch을 지정
-    num_epochs = 10
+    num_epochs = 30
     model_name = 'model-pretrained'
 
     # 최소 loss를 inf으로 설정
@@ -212,11 +232,19 @@ def train_set(filepath):
         # val_loss가 개선되었다면 min_loss를 갱신 후 model의 가중치(weights)를 저장
         if val_loss < min_loss:
             print(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!')
+
+            # 파일에도 저장
+            with open(s, "a") as file:
+                file.write(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!\n')
             min_loss = val_loss
             torch.save(model.state_dict(), f'{model_name}.pth')
             
         # Epoch 별 결과를 출력
         print(f'Epoch {epoch+1:02d}, loss: {train_loss:.5f}, acc: {train_acc:.5f}, val_loss: {val_loss:.5f}, val_accuracy: {val_acc:.5f}')
+
+        # Epoch 별 결과를 파일에 저장
+        with open(s, "a") as file:
+                file.write(f'Epoch {epoch+1:02d}, loss: {train_loss:.5f}, acc: {train_acc:.5f}, val_loss: {val_loss:.5f}, val_accuracy: {val_acc:.5f}\n')
     
     # 모델에 저장한 가중치를 로드
     model.load_state_dict(torch.load(f'{model_name}.pth'))
@@ -224,6 +252,9 @@ def train_set(filepath):
     # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출
     final_loss, final_acc = model_eval(model, test_loader, loss_fn, device)
     print(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}')
+    # 결과를 파일에 저장
+    with open(s, "a") as file:
+        file.write(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}\n')
 
 
 class CustomDataset(Dataset): 

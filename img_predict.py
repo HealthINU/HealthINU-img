@@ -24,8 +24,9 @@ class ImageClassifier:
         self.label_path = label_path
 
         # 모델과 라벨 초기화
-        self.model = self._load_model()
         self.labels = self._load_labels()
+        self.model = self._load_model()
+        
 
     # 모델 로드
     def _load_model(self):
@@ -38,7 +39,7 @@ class ImageClassifier:
             nn.ReLU(),
             nn.Linear(256, 64),
             nn.ReLU(),
-            nn.Linear(64, 3)
+            nn.Linear(64, len(self.labels))
         )
 
         # 모델의 Fully Connected Layer를 새로 정의한 fc로 교체

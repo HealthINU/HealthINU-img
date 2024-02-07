@@ -30,6 +30,13 @@ def findImages(keyword, url_mod):
     createFolder(dir)
     dir += "\\" + keyword + "\\"
     createFolder(dir)
+    
+    # 로그 텍스트 파일 생성
+    with open(dir + keyword + ".txt", 'w') as f:
+        from datetime import datetime 
+        f.write(datetime.now().strftime("%Y%m%d_%H%M%S \n") )
+        f.write(keyword + "\n")
+        f.write(url)
 
     # 크롬 드라이버 설정
     chrome_options = webdriver.ChromeOptions()

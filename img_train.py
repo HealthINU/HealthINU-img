@@ -83,7 +83,7 @@ def train_set(filepath):
     fix_seed()
 
 
-    # 폴더별로 이미지 데이터셋을 살펴보고, 오염된 이미지를 제거
+    # 폴더 별로 이미지 데이터셋을 살펴보고, 오염된 이미지를 제거
     for dir_ in dirs:
         folder_path = os.path.join(root, dir_)
         files = os.listdir(folder_path)
@@ -149,6 +149,7 @@ def train_set(filepath):
     train_labels = [f.split('\\')[2] for f in train_images]
     test_labels = [f.split('\\')[2] for f in test_images]
 
+    # 데이터셋 정보 출력
     print('==='*12)
     print(f'[Dataset INFO]')
     print(f'Train images: {len(train_images)}')
@@ -157,7 +158,7 @@ def train_set(filepath):
     print(f'Test labels: {len(test_labels)}')
     print('==='*12)
 
-    # Image Augmentation
+    # 이미지 전처리
     train_transform = transforms.Compose([
         transforms.Resize((256, 256)),          # 이미지 리사이즈
         transforms.CenterCrop((224, 224)),      # 중앙 Crop
@@ -198,7 +199,7 @@ def train_set(filepath):
         nn.ReLU(), 
         nn.Linear(256, 64), 
         nn.ReLU(), 
-        nn.Linear(64, len(folders)), # 폴더 갯수만큼 
+        nn.Linear(64, len(folders)), # 폴더 갯수만큼 클래스 수 맞춤
     )
     model.fc = fc
     model.to(device)
@@ -233,7 +234,7 @@ def train_set(filepath):
         if val_loss < min_loss:
             print(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!')
 
-            # 파일에도 저장
+            # 로그 파일에도 저장
             with open(s, "a") as file:
                 file.write(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!\n')
             min_loss = val_loss
@@ -242,7 +243,7 @@ def train_set(filepath):
         # Epoch 별 결과를 출력
         print(f'Epoch {epoch+1:02d}, loss: {train_loss:.5f}, acc: {train_acc:.5f}, val_loss: {val_loss:.5f}, val_accuracy: {val_acc:.5f}')
 
-        # Epoch 별 결과를 파일에 저장
+        # Epoch 별 결과를 로그 파일에 저장
         with open(s, "a") as file:
                 file.write(f'Epoch {epoch+1:02d}, loss: {train_loss:.5f}, acc: {train_acc:.5f}, val_loss: {val_loss:.5f}, val_accuracy: {val_acc:.5f}\n')
     
@@ -252,12 +253,13 @@ def train_set(filepath):
     # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출
     final_loss, final_acc = model_eval(model, test_loader, loss_fn, device)
     print(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}')
-    # 결과를 파일에 저장
+    # 결과를 로그 파일에 저장
     with open(s, "a") as file:
         file.write(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}\n')
 
 
 class CustomDataset(Dataset): 
+    # 파일 경로, 라벨, class_to_idx, transform을 입력으로 받음
     def __init__(self, files, labels, class_to_idx, transform):
         super(CustomDataset, self).__init__()
         self.files = files
@@ -269,6 +271,7 @@ class CustomDataset(Dataset):
     def __len__(self): 
         return len(self.files)
     
+    # 데이터셋의 idx번째 데이터를 반환
     def __getitem__(self, idx):
         # file 경로
         file = self.files[idx]
@@ -290,7 +293,7 @@ def model_train(model, data_loader, loss_fn, optimizer, device):
     running_loss = 0
     corr = 0
     
-    # 예쁘게 Progress Bar를 출력하면서 훈련 상태를 모니터링 하기 위하여 tqdm으로 래핑함
+    # 예쁘게 Progress Bar를 출력하면서 훈련 상태를 모니터링 하기 위하여 tqdm으로 래핑
     prograss_bar = tqdm(data_loader)
     
     # mini-batch 학습을 시작

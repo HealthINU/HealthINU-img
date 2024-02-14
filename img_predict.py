@@ -90,6 +90,7 @@ class ImageClassifier:
 
         # 이미지 파일 열기
         img = Image.open(filepath)
+        
         # 이미지 전처리 수행
         img_tensor = self.preprocess_image(img)
 

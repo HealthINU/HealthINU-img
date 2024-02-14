@@ -1,0 +1,90 @@
+[
+    {
+        "name" : "test1.jpg",
+        "answer" : "leg_extension_machine"
+    },
+	{
+        "name" : "test2.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test3.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test4.jpg",
+        "answer" : "lat_pull_down_machine"
+    },
+	{
+        "name" : "test5.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test6.jpg",
+        "answer" : "lat_pull_down_machine"
+    },
+	{
+        "name" : "test7.jpg",
+        "answer" : "lat_pull_down_machine"
+    },
+	{
+        "name" : "test8.jpg",
+        "answer" : "leg_extension_machine"
+    },
+	{
+        "name" : "test9.jpg",
+        "answer" : "lat_pull_down_machine"
+    },
+	{
+        "name" : "test10.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test11.jpg",
+        "answer" : "leg_press_machine"
+    },
+	{
+        "name" : "test12.jpg",
+        "answer" : "leg_extension_machine"
+    },
+	{
+        "name" : "test13.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test14.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test15.jpg",
+        "answer" : "shoulder_press_machine"
+    },
+	{
+        "name" : "test16.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test17.jpg",
+        "answer" : "hip_abduction_machine"
+    },
+	{
+        "name" : "test18.jpg",
+        "answer" : "bench_press_machine"
+    },
+	{
+        "name" : "test19.jpg",
+        "answer" : "pec_deck_fly_machine"
+    },
+	{
+        "name" : "test20.jpg",
+        "answer" : "pec_deck_fly_machine"
+    },
+	{
+        "name" : "test21.jpg",
+        "answer" : "lat_pull_down_machine"
+    },
+	{
+        "name" : "test22.jpg",
+        "answer" : "leg_press_machine"
+    }
+]

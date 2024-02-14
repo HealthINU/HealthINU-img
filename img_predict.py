@@ -104,15 +104,15 @@ class ImageClassifier:
         self.labels[index[0]], percentage[index[0]].item()
 
         # 예측 결과 출력
-        print("분류 결과 : {0}, {1}".format(self.labels[index[0]], percentage[index[0]].item()))
+        #print("분류 결과 : {0}, {1}".format(self.labels[index[0]], percentage[index[0]].item()))
 
         # 예측 결과 및 퍼센티지를 딕셔너리에 저장
-        print("---" * 12)
+        #print("---" * 12)
         _, indices = torch.sort(out, descending=True)
         for idx in indices[0][:len(self.labels)]:
-            print("{0}){1}, {2}".format(idx, self.labels[idx], percentage[idx].item()))
+            #print("{0}){1}, {2}".format(idx, self.labels[idx], percentage[idx].item()))
             result_dict[self.labels[idx]] = percentage[idx].item()
-        print("---" * 12)
+        #print("---" * 12)
 
         # 딕셔너리 반환
         return result_dict

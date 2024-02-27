@@ -107,7 +107,7 @@ def train_set(filepath):
         file.write("--------------------------------------\n")
     
 
-    # train: test ratio. 0.3로 설정시 test set의 비율은 20%로 설정됨
+    # train: test ratio. 0.2로 설정시 test set의 비율은 20%로 설정됨
     test_size = 0.2
 
     # train / test 셋의 파일을 나눔
@@ -177,9 +177,14 @@ def train_set(filepath):
     test_dataset = CustomDataset(test_images, test_labels, class_to_idx, test_transform)
 
     # train, test 데이터 로더 생성 => 모델 학습시 입력하는 데이터셋
-    # 총 횟수는 이미지수 / 배치사이즈
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=8)
-    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=True, num_workers=8)
+    # 총 횟수는 이미지수 / 배치 사이즈
+    # 배치 사이즈의 기본 값은 32로 설정, 테스트시 변경 가능
+    batch_size = 32
+    train_loader = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=8)
+    test_loader = DataLoader(test_dataset, batch_size, shuffle=True, num_workers=8)
+
+    with open(s, "a") as file:
+        file.write("Batch Size : {} \n".format(batch_size))
     
     # ResNet101 모델 생성
     # Convolutional layer - "필터"는 이미지를 통과하여 한 번에 몇 Pixel(NxN)을 스캔하고 각 형상이 속하는 클래스를 예측하는 형상 맵을 만듦
@@ -188,7 +193,6 @@ def train_set(filepath):
     # 가중치를 Freeze 하여 학습시 업데이트가 일어나지 않도록 설정
     for param in model.parameters():
         param.requires_grad = False  # 가중치 Freeze
-
 
     # Fully-Connected Layer를 Sequential로 생성하여 pretrained 모델의 'Classifier'에 연결
     # Convolution/Pooling 네트워크 프로세스의 최종 결과를 취해서 
@@ -206,8 +210,9 @@ def train_set(filepath):
 
     # 옵티마이저를 정의 
     # 옵티마이저에는 model.parameters()를 지정해야 함
-    # 학습률 (learning rate)은 0.0001로 설정
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    # 학습률 (learning rate)은 기본은 0.0001로 설정
+    lr=0.0001
+    optimizer = optim.Adam(model.parameters(), lr)
 
     # 손실함수(loss function)을 지정
     # Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정함
@@ -216,6 +221,11 @@ def train_set(filepath):
     # 최대 Epoch을 지정
     num_epochs = 30
     model_name = 'model-pretrained'
+
+    with open(s, "a") as file:
+        file.write("Learning Rate : {} \n".format(lr))
+        file.write("Total Epochs : {} \n".format(num_epochs))
+        file.write("--------------------------------------\n")
 
     # 최소 loss를 inf으로 설정
     min_loss = np.inf

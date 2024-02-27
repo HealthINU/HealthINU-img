@@ -83,7 +83,7 @@ def findImages(keyword, url_mod):
     for image in images:
         try:
             image.click()
-            time.sleep(2.5)
+            time.sleep(4)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(

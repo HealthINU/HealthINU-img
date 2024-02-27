@@ -1,6 +1,7 @@
 # 메인맨
 import sys
 import json
+import os
 
 # 학습함수, 테스트함수 불러오기
 from img_train import train_set, validate_image
@@ -16,8 +17,17 @@ def main():
 
     # 학습인 경우
     if(sys.argv[1]=="!train"):
-         print("이미지 학습 시작")
-         train_set('.\\dataset')
+        print("이미지 학습 시작")
+        train_set('.\\dataset')
+        # 학습 후 현재시간 가져옴
+        from datetime import datetime 
+        s = datetime.now().strftime("models/model-pretrained_%Y%m%d_%H%M%S.pth")
+        # 현재 model-pretrained.pth 모델을 복사해서 s로 된 이름으로 저장
+        if not os.path.exists("models"):
+            os.makedirs("models")
+        import shutil
+        shutil.copy("model-pretrained.pth", s)
+        print("Model saved")
 
     # 테스트인 경우
     elif(sys.argv[1]=="!test"):

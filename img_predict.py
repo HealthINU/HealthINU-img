@@ -30,8 +30,13 @@ class ImageClassifier:
 
     # 모델 로드
     def _load_model(self):
-        # ResNet101 모델 초기화
-        model = models.resnet101(weights="DEFAULT")
+        # ResNet 모델 초기화
+        model_set = "resnet101"
+    
+        if(model_set=="resnet101"):
+            model = models.resnet101(weights="DEFAULT") 
+        elif(model_set=="resnet50"):
+            model = models.resnet50(weights="DEFAULT") 
 
         # 분류를 위한 Fully Connected Layer 정의
         fc = nn.Sequential(

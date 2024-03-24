@@ -186,9 +186,17 @@ def train_set(filepath):
     with open(s, "a") as file:
         file.write("Batch Size : {} \n".format(batch_size))
     
-    # ResNet101 모델 생성
+    # ResNet 모델 생성
     # Convolutional layer - "필터"는 이미지를 통과하여 한 번에 몇 Pixel(NxN)을 스캔하고 각 형상이 속하는 클래스를 예측하는 형상 맵을 만듦
-    model = models.resnet101(weights="DEFAULT") 
+    model_set = "resnet101"
+
+    if(model_set=="resnet101"):
+        model = models.resnet101(weights="DEFAULT") 
+    elif(model_set=="resnet50"):
+        model = models.resnet50(weights="DEFAULT") 
+
+    with open(s, "a") as file:
+        file.write("Model : {} \n".format(model_set))
 
     # 가중치를 Freeze 하여 학습시 업데이트가 일어나지 않도록 설정
     for param in model.parameters():

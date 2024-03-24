@@ -41,7 +41,7 @@ def findImages(keyword, url_mod):
     # 크롬 드라이버 설정
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    #chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
+    chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
     chrome_options.add_argument('window-size=1920x1080')
     chrome_options.add_argument("disable-gpu")
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)

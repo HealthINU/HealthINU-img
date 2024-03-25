@@ -2,6 +2,7 @@
 # img_main.py 과는 독립적으로 작동함
 # 모델 저장 및 불러오기용
 
+from tqdm import tqdm
 import os
 import urllib.request
 from webdriver_manager.chrome import ChromeDriverManager
@@ -79,8 +80,9 @@ def findImages(keyword, url_mod):
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
     # 이미지 마다 반복
-    count = 1
-    for image in images:
+    prograss_bar = tqdm(images)
+    
+    for image in prograss_bar:
         try:
             image.click()
             time.sleep(4)
@@ -103,8 +105,6 @@ def findImages(keyword, url_mod):
             urllib.request.urlretrieve(imgUrl, f'{dir}{keyword}_{str(count)}.jpg')
             #print(imgUrl)
 
-            if (count % 50==0): print('Downloaded {} images'.format(count))
-            count = count + 1
         except Exception as e:
             # 암호화된 이미지는 무시
             # print('Error : ', e)

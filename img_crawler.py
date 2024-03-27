@@ -42,9 +42,10 @@ def findImages(keyword, url_mod):
     # 크롬 드라이버 설정
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
+    #chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
     chrome_options.add_argument('window-size=1920x1080')
     chrome_options.add_argument("disable-gpu")
+    chrome_options.add_argument('--log-level=3')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get(url)
     driver.implicitly_wait(time_to_wait=10)
@@ -81,6 +82,7 @@ def findImages(keyword, url_mod):
 
     # 이미지 마다 반복
     prograss_bar = tqdm(images)
+    count = 1
     
     for image in prograss_bar:
         try:
@@ -104,6 +106,7 @@ def findImages(keyword, url_mod):
             # 이미지 파일 저장
             urllib.request.urlretrieve(imgUrl, f'{dir}{keyword}_{str(count)}.jpg')
             #print(imgUrl)
+            count = count + 1
 
         except Exception as e:
             # 암호화된 이미지는 무시

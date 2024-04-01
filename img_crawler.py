@@ -18,13 +18,11 @@ def createFolder(dir):
         os.makedirs(dir)
 
 
-def findImages(keyword, url_mod):
+def findImages(keyword, url, url_mod):
+    # URL 모드가 아닐경우
     # URL 설정
-    url = 'https://www.google.com/imghp'
-
-    # URL 모드일경우 덮어 씌우게 하기
-    if(url_mod):
-        url = input("Enter your url : ")
+    if not url_mod:
+        url = 'https://www.google.com/imghp'
     
     # 저장할 폴더 생성
     dir = ".\crawled"
@@ -41,11 +39,10 @@ def findImages(keyword, url_mod):
 
     # 크롬 드라이버 설정
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    #chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
+    chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
     chrome_options.add_argument('window-size=1920x1080')
     chrome_options.add_argument("disable-gpu")
-    chrome_options.add_argument('--log-level=3')
+    chrome_options.add_argument('log-level=3')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get(url)
     driver.implicitly_wait(time_to_wait=10)
@@ -80,6 +77,12 @@ def findImages(keyword, url_mod):
     # 이미지 리스트
     images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
+    # images가 비어있을 경우 위 코드를 다시 실행
+    if not images:
+        print("No images found, retrying...")
+        driver.close()
+        return 1
+    
     # 이미지 마다 반복
     prograss_bar = tqdm(images)
     count = 1
@@ -87,7 +90,7 @@ def findImages(keyword, url_mod):
     for image in prograss_bar:
         try:
             image.click()
-            time.sleep(4)
+            time.sleep(3)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(
@@ -116,12 +119,16 @@ def findImages(keyword, url_mod):
     print('Download Complete')
     # 크롬 드라이버 종료
     driver.close()
+    return 0
 
 
 def main():
     keyword = input('Enter Image Folder Name : ')
     url_mod = True
-    findImages(keyword, url_mod)
+    url = input("Enter your url : ")
+    result = 1
+    while result != 0:
+        result = findImages(keyword, url, url_mod)
     exit()
 
 if __name__ == "__main__":

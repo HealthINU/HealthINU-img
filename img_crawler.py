@@ -41,7 +41,6 @@ def findImages(keyword, url, url_mod):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('headless') # 이거 쓰면 headless 됨
     chrome_options.add_argument('window-size=1920x1080')
-    chrome_options.add_argument("disable-gpu")
     chrome_options.add_argument('log-level=3')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get(url)
@@ -67,20 +66,24 @@ def findImages(keyword, url, url_mod):
 
         # 새로운 스크롤 높이 구하여 이전 스크롤 높이와 비교
         new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            try:
-                driver.find_element_by_css_selector(".mye4qd").click()
-            except:
-                break
+        try:
+            if new_height == last_height: # 끝 도달 시
+                driver.find_element_by_css_selector(".mye4qd").click() # 더보기 버튼 클릭
+        except: # 더보기 버튼이 없을 경우
+            break # 탈출
         last_height = new_height
     
     # 이미지 리스트
-    images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
+    #images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
+
+    images = driver.find_elements(By.CSS_SELECTOR, ".YQ4gaf")
+    print(f"Found {len(images)} images")
 
     # images가 비어있을 경우 위 코드를 다시 실행
     if not images:
         print("No images found, retrying...")
         driver.close()
+        time.sleep(2)
         return 1
     
     # 이미지 마다 반복
@@ -90,12 +93,12 @@ def findImages(keyword, url, url_mod):
     for image in prograss_bar:
         try:
             image.click()
-            time.sleep(3)
+            time.sleep(4)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(
                 By.XPATH,
-                '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div/div[3]/div[1]/a/img'
+                '//*[@id="Sva75c"]/div[2]/div[2]/div[2]/div[2]/c-wiz/div/div/div/div/div[3]/div[1]/a/img[1]'
             ).get_attribute("src")
 
             # 오프너로 열기
@@ -127,6 +130,7 @@ def main():
     url_mod = True
     url = input("Enter your url : ")
     result = 1
+    # 성공할 때까지 자동 재시도
     while result != 0:
         result = findImages(keyword, url, url_mod)
     exit()

@@ -5,3 +5,4 @@ desc/*
 *.pyc
 *.pth
 log/*
+img_classes*

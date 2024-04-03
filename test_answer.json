@@ -86,5 +86,9 @@
 	{
         "name" : "test22.jpg",
         "answer" : "leg_press_machine"
+    },
+	{
+        "name" : "test23.jpg",
+        "answer" : "garbage"
     }
 ]

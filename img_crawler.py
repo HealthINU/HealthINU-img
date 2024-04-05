@@ -91,9 +91,14 @@ def findImages(keyword, url, url_mod):
     count = 1
     
     for image in prograss_bar:
+        if(count % 2 ==0): # 임시 조치 (2개씩 받는 이슈 해결 필요)
+            image.click()
+            time.sleep(1)
+            count = count + 1
+            continue
         try:
             image.click()
-            time.sleep(4)
+            time.sleep(3)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(

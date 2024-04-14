@@ -1,5 +1,7 @@
 # 폴더 내 이미지 파일 배경 투명 처리
 import os
+from time import sleep
+from tqdm import tqdm
 from pathlib import Path
 from rembg import remove, new_session
 def createFolder(dir):
@@ -9,9 +11,9 @@ def createFolder(dir):
 
 def img_remove(path):
     session = new_session()
-
+    files = Path(path).glob('*.jpg')
     # 폴더 내 jpg들
-    for file in Path(path).glob('*.jpg'):
+    for file in tqdm(files):
         input_path = str(file)
         output_path = str(file.parent / "transparent" / (file.stem + "_out.png"))
         
@@ -20,7 +22,6 @@ def img_remove(path):
                 input = i.read()
                 output = remove(input, session=session)
                 o.write(output)
-        print(output_path + " Done")
 
 
 def main():

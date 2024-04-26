@@ -6,3 +6,5 @@ desc/*
 *.pth
 log/*
 img_classes*
+bg/*
+output/*

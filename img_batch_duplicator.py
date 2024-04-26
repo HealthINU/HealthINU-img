@@ -51,19 +51,21 @@ def gaussian_blur(img, radius=2):
     return img
 
 def img_merger(img1, img2, dir_output):
-    # img1: 투명 운동기구 이미지, img2: 배경 이미지
+    # img1: 투명 운동기구 이미지, img2: 배경 이미지임
 
     # img1의 높이가 너비보다 큰지 비교
-    # (사실 랫풀다운용임)
+    # (사실 랫 풀 다운 같은거는 높이가 너비보다 커가지고)
     if img1.size[1] > img1.size[0] * 1.2:
         # 크다면 임시 투명 이미지 생성
         # 사이즈는 높이와 너비가 img1의 높이 길이와 같은 이미지 ( 1대1 비율로 맞추기 위함 )
         img_temp = Image.new('RGBA', (img1.size[1], img1.size[1]), (255, 255, 255, 0))
         img_temp.paste(img1, (0, 0), img1)
         img1 = img_temp
+
     # img1의 너비가 더 큰경우
     elif img1.size[0] > img1.size[1] * 1.2:
         # img1의 중앙을 높이와 같은 길이로 자르기 ( 1대1 비율로 맞추기 위함 )
+        # 보통 뭐 중앙에 있으니.. 그냥 잘라도 될듯
         left = (img1.size[0] - img1.size[1]) / 2
         right = (img1.size[0] + img1.size[1]) / 2
         img1 = img1.crop((left, 0, right, img1.size[1]))

@@ -96,9 +96,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
     
     # 폴더 경로를 리스트로 저장
     # 코랩일 경우 /로 경로가 나뉘고, 일반적인 경우 \\로 경로가 나뉨
-    if(isColab):
+    if(isColab): # True
         folders = glob.glob(root+'/*')
-    else:
+    else: # False
         folders = glob.glob(root+'\\*')
     print(folders)
     print("%d folders found".format(len(folders)))
@@ -126,7 +126,11 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
         label = os.path.basename(folder)
         labels_txt += label + "\n"
 
-        files = sorted(glob.glob(folder + '\\*'))
+        # 코랩일 경우 /로, 일반적인 경우 \\로
+        if(isColab): # True
+            files = sorted(glob.glob(folder + '/*'))
+        else: # False
+            files = sorted(glob.glob(folder + '\\*'))
 
         # 각 라벨마다 이미지 데이터셋 셔플
         random.shuffle(files)
@@ -150,8 +154,13 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
     class_to_idx = {os.path.basename(f):idx for idx, f in enumerate(folders)}
 
     # Label 생성
-    train_labels = [f.split('\\')[2] for f in train_images]
-    test_labels = [f.split('\\')[2] for f in test_images]
+    # 코랩일 경우 /로, 일반적인 경우 \\로
+    if(isColab): # True
+        train_labels = [f.split('/')[2] for f in train_images]
+        test_labels = [f.split('/')[2] for f in test_images]
+    else: # False
+        train_labels = [f.split('\\')[2] for f in train_images]
+        test_labels = [f.split('\\')[2] for f in test_images]
 
     # 데이터셋 정보 출력
     print('==='*12)

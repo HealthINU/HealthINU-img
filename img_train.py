@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, set_epochs=30, set_lr=0.0001):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -95,7 +95,11 @@ def train_set(filepath, set_epochs=30, set_lr=0.0001):
                 os.remove(img)
     
     # 폴더 경로를 리스트로 저장
-    folders = glob.glob(root+'\\*')
+    # 코랩일 경우 /로 경로가 나뉘고, 일반적인 경우 \\로 경로가 나뉨
+    if(isColab):
+        folders = glob.glob(root+'/*')
+    else:
+        folders = glob.glob(root+'\\*')
     print(folders)
     print("%d folders found".format(len(folders)))
 

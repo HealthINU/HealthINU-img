@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath):
+def train_set(filepath, set_epochs=30, set_lr=0.0001):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -219,7 +219,7 @@ def train_set(filepath):
     # 옵티마이저를 정의 
     # 옵티마이저에는 model.parameters()를 지정해야 함
     # 학습률 (learning rate)은 기본은 0.0001로 설정
-    lr=0.0001
+    lr=set_lr
     optimizer = optim.Adam(model.parameters(), lr)
 
     # 손실함수(loss function)을 지정
@@ -227,7 +227,7 @@ def train_set(filepath):
     loss_fn = nn.CrossEntropyLoss()
 
     # 최대 Epoch을 지정
-    num_epochs = 30
+    num_epochs = set_epochs
     model_name = 'model-pretrained'
 
     with open(s, "a") as file:

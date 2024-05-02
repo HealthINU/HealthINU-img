@@ -156,8 +156,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
     print(class_to_idx)
 
     # Label 생성
-    train_labels = [f.split(token1)[2] for f in train_images]
-    test_labels = [f.split(token1)[2] for f in test_images]
+    # 마지막에서 두 번째 요소를 라벨로 사용
+    train_labels = [f.split(token1)[-2] for f in train_images]
+    test_labels = [f.split(token1)[-2] for f in test_images]
 
 
     # 데이터셋 정보 출력

@@ -190,9 +190,11 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
     # train, test 데이터 로더 생성 => 모델 학습시 입력하는 데이터셋
     # 총 횟수는 이미지수 / 배치 사이즈
     # 배치 사이즈의 기본 값은 32로 설정, 테스트시 변경 가능
+    # num_workers는 코랩일 경우 2, 아닐 경우 8로 설정
+    workers = 2 if(isColab) else 8
     batch_size = 32
-    train_loader = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=8)
-    test_loader = DataLoader(test_dataset, batch_size, shuffle=True, num_workers=8)
+    train_loader = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=workers)
+    test_loader = DataLoader(test_dataset, batch_size, shuffle=True, num_workers=workers)
 
     with open(s, "a") as file:
         file.write("Batch Size : {} \n".format(batch_size))

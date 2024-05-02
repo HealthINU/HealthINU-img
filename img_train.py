@@ -153,6 +153,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
 
     # Class to Index 생성
     class_to_idx = {os.path.basename(f):idx for idx, f in enumerate(folders)}
+    print(class_to_idx)
 
     # Label 생성
     train_labels = [f.split(token1)[2] for f in train_images]

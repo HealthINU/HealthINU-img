@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, isFreeze=True):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, isFreeze=True):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -192,7 +192,6 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     # 총 횟수는 이미지수 / 배치 사이즈
     # 배치 사이즈의 기본 값은 32로 설정, 테스트시 변경 가능
     # num_workers는 코랩일 경우 2, 아닐 경우 8로 설정
-    workers = 2 if(isColab) else 8
     train_loader = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=workers)
     test_loader = DataLoader(test_dataset, batch_size, shuffle=True, num_workers=workers)
 

@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, isFreeze=True):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -193,7 +193,6 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
     # 배치 사이즈의 기본 값은 32로 설정, 테스트시 변경 가능
     # num_workers는 코랩일 경우 2, 아닐 경우 8로 설정
     workers = 2 if(isColab) else 8
-    batch_size = 32
     train_loader = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=workers)
     test_loader = DataLoader(test_dataset, batch_size, shuffle=True, num_workers=workers)
 
@@ -213,8 +212,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
         file.write("Model : {} \n".format(model_set))
 
     # 가중치를 Freeze 하여 학습시 업데이트가 일어나지 않도록 설정
-    for param in model.parameters():
-        param.requires_grad = False  # 가중치 Freeze
+    if(isFreeze):
+        for param in model.parameters():
+            param.requires_grad = False  # 가중치 Freeze
 
     # Fully-Connected Layer를 Sequential로 생성하여 pretrained 모델의 'Classifier'에 연결
     # Convolution/Pooling 네트워크 프로세스의 최종 결과를 취해서 

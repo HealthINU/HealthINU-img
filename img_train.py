@@ -97,9 +97,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001):
         images = [os.path.join(folder_path, f) for f in files]
         for img in images:
             valid = validate_image(img)
-            #if not valid:
+            if not valid:
                 # corrupted 된 이미지 제거함
-                #if not (isColab): os.remove(img)
+                os.remove(img)
     
     # 폴더 경로를 리스트로 저장
     folders = glob.glob(root+token2)

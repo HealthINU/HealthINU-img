@@ -67,8 +67,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
         os.makedirs('log')
 
     # 로그 파일 생성
-    from datetime import datetime 
-    s = datetime.now().strftime("log/%Y%m%d_%H%M%S_train_log.txt") 
+    from datetime import datetime
+    from pytz import timezone
+    s = datetime.now(timezone('Asia/Seoul')).strftime("log/%Y%m%d_%H%M%S_train_log.txt") 
     print(s) # 20XX0XXX_XX27_train_log.txt 의 이름으로 저장됨
 
     # device 설정 (cuda:0 혹은 cpu 사용)

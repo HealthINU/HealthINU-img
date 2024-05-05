@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, optim="Adam", isFreeze=True):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, optim="Adam", isFreeze=True):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -256,6 +256,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     # 최소 loss를 inf으로 설정
     min_loss = np.inf
 
+    # Early Stopping을 위한 변수를 0으로 초기화
+    early_cnt = 0
+
     # Epoch 별 훈련 및 검증을 수행 함
     for epoch in range(num_epochs):
         # 모델 훈련
@@ -268,6 +271,8 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
             
         # val_loss가 개선되었다면 min_loss를 갱신 후 model의 가중치(weights)를 저장
         if val_loss < min_loss:
+            # 개선되었으므로 early_cnt를 0으로 초기화
+            early_cnt = 0
             print(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!')
 
             # 로그 파일에도 저장
@@ -282,6 +287,26 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
         # Epoch 별 결과를 로그 파일에 저장
         with open(s, "a") as file:
                 file.write(f'Epoch {epoch+1:02d}, loss: {train_loss:.5f}, acc: {train_acc:.5f}, val_loss: {val_loss:.5f}, val_accuracy: {val_acc:.5f}\n')
+
+        # Early Stopping을 위한 조건문
+        # val_loss가 개선되지 않으면 early_cnt를 증가시킴
+        if (val_loss >= min_loss & early_patience > 0):
+            #early stopping 카운트
+            early_cnt += 1
+            print(f'[INFO] EarlyStopping counter: {early_cnt} out of {early_patience}')
+
+            # 로그 파일에 저장
+            with open(s, "a") as file:
+                file.write(f'[INFO] EarlyStopping counter: {early_cnt} out of {early_patience}\n')
+            
+            # 만약 이 상태에서 early_cnt가 early_patience와 같거나 커진 상태라면 학습을 종료
+            if early_cnt >= early_patience:
+                print(f'[INFO] Early stopping at {epoch+1} epoch')
+
+                # 로그 파일에 저장
+                with open(s, "a") as file:
+                    file.write(f'[INFO] Early Stopping at {epoch+1} epoch\n')
+                break
     
     # 모델에 저장한 가중치를 로드
     model.load_state_dict(torch.load(f'{model_name}.pth'))

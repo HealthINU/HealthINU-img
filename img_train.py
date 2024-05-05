@@ -262,6 +262,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     # Epoch 별 훈련 및 검증을 수행 함
     for epoch in range(num_epochs):
         # 모델 훈련
+        
+        # isImproved는 val_loss가 개선되었는지 확인하기 위한 변수
+        isImproved = False
 
         # 훈련 손실과 정확도를 반환
         train_loss, train_acc = model_train(model, train_loader, loss_fn, optimizer, device)
@@ -273,6 +276,10 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
         if val_loss < min_loss:
             # 개선되었으므로 early_cnt를 0으로 초기화
             early_cnt = 0
+
+            # 개선되었으므로 isImproved를 True로 설정
+            isImproved = True
+
             print(f'[INFO] val_loss has been improved from {min_loss:.5f} to {val_loss:.5f}. Saving Model!')
 
             # 로그 파일에도 저장
@@ -290,7 +297,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
 
         # Early Stopping을 위한 조건문
         # val_loss가 개선되지 않으면 early_cnt를 증가시킴
-        if (val_loss >= min_loss and early_patience > 0):
+        if (not isImproved and val_loss >= min_loss and early_patience > 0):
             #early stopping 카운트
             early_cnt += 1
             print(f'[INFO] EarlyStopping counter: {early_cnt} out of {early_patience}')

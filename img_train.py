@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, optim="Adam", isFreeze=True):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, optim_name="Adam", isFreeze=True):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -233,12 +233,12 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     # 옵티마이저에는 model.parameters()를 지정해야 함
     # 학습률 (learning rate)은 기본은 0.0001로 설정
     lr=set_lr
-    if(optim == "Adam"): optimizer = optim.Adam(model.parameters(), lr)
-    elif(optim == "SGD"): optimizer = optim.SGD(model.parameters(), lr)
+    if(optim_name == "Adam"): optimizer = optim.Adam(model.parameters(), lr)
+    elif(optim_name == "SGD"): optimizer = optim.SGD(model.parameters(), lr)
     else: optimizer = optim.Adam(model.parameters(), lr) # 기본값은 Adam
 
     with open(s, "a") as file:
-        file.write("Optimizer : {} \n".format(optim))
+        file.write("Optimizer : {} \n".format(optim_name))
 
     # 손실함수(loss function)을 지정
     # Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정함

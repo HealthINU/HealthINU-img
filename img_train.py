@@ -61,16 +61,10 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, optim_name="Adam", isFreeze=True):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, optim_name="Adam", isFixedSeed=True, isFreeze=True):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
-
-    # 로그 파일 생성
-    from datetime import datetime
-    from pytz import timezone
-    s = datetime.now(timezone('Asia/Seoul')).strftime("log/%Y%m%d_%H%M%S_train_log.txt") 
-    print(s) # 20XX0XXX_XX27_train_log.txt 의 이름으로 저장됨
 
     # device 설정 (cuda:0 혹은 cpu 사용)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -80,8 +74,33 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     root = filepath
     dirs = os.listdir(root)
 
+    # 로그 파일 생성
+    from datetime import datetime
+    from pytz import timezone
+    s = datetime.now(timezone('Asia/Seoul')).strftime("log/%Y%m%d_%H%M%S_train_log.txt") 
+    print(s) # 20XX0XXX_XX27_train_log.txt 의 이름으로 저장됨
+
     # 시드 고정
-    fix_seed()
+    if(isFixedSeed): fix_seed()
+    '''else:
+        # 시드 고정을 하지 않을 경우, 시드를 로그에 저장
+        z = datetime.now(timezone('Asia/Seoul')).strftime("log/%Y%m%d_%H%M%S_train_seed.txt") 
+        with open(z, "a") as file:
+            file.write("-------------------------------------- \n")
+            file.write("Seed List \n")
+            file.write("torch.seed : " + torch.seed())
+            file.write("\n")
+            file.write("torch.cuda.seed : " + torch.cuda.seed())
+            file.write("\n")
+            file.write("torch.cuda.seed_all : " + torch.cuda.seed_all())
+            file.write("\n")
+            file.write("np.random.seed : "+np.random.seed)
+            file.write("\n")
+            file.write("random.seed : "+random.seed)
+            file.write("\n")
+            file.write("--------------------------------------\n")
+        # 아직 더미임
+        '''
 
     # 코랩일 경우 /로 경로가 나뉘고, 일반적인 경우 \\로 경로가 나뉨
     if(isColab): # True

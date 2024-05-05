@@ -290,7 +290,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
 
         # Early Stopping을 위한 조건문
         # val_loss가 개선되지 않으면 early_cnt를 증가시킴
-        if (val_loss >= min_loss & early_patience > 0):
+        if (val_loss >= min_loss and early_patience > 0):
             #early stopping 카운트
             early_cnt += 1
             print(f'[INFO] EarlyStopping counter: {early_cnt} out of {early_patience}')

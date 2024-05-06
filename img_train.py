@@ -341,6 +341,10 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     # 최종 검증 손실(validation loss)와 검증 정확도(validation accuracy)를 산출
     final_loss, final_acc = model_eval(model, test_loader, loss_fn, device)
     print(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}')
+
+    # GPU 메모리를 비움
+    torch.cuda.empty_cache()
+
     # 결과를 로그 파일에 저장
     with open(s, "a") as file:
         file.write(f'Evaluation loss: {final_loss:.5f}, Evaluation accuracy: {final_acc:.5f}\n')

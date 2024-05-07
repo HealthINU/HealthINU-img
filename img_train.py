@@ -167,6 +167,12 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     with open('./img_classes.txt','w+') as file:
         file.write(labels_txt)
 
+    # 로그 파일에도 라벨 저장
+    with open(s, "a") as file:
+        file.write("-------------------------------------- \n")
+        file.write(labels_txt)
+        file.write("--------------------------------------\n")
+
     # train, test 전체 이미지 셔플
     random.shuffle(train_images)
     random.shuffle(test_images)

@@ -169,7 +169,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
 
     # 로그 파일에도 라벨 저장
     with open(s, "a") as file:
-        file.write("-------------------------------------- \n")
+        file.write("------------Label List----------------\n")
         file.write(labels_txt)
         file.write("--------------------------------------\n")
 
@@ -201,6 +201,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
         transforms.Resize((256, 256)),          # 이미지 리사이즈
         transforms.CenterCrop((224, 224)),      # 중앙 Crop
         transforms.RandomHorizontalFlip(0.5),   # 50% 확률로 Horizontal Flip
+        transforms.RandomRotation(15),          # 랜덤 15도 회전
         transforms.ToTensor(), 
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])

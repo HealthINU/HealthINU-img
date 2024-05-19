@@ -262,6 +262,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     lr=set_lr
     if(optim_name == "Adam"): optimizer = optim.Adam(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d)
     elif(optim_name == "AdamW"): optimizer = optim.AdamW(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d)
+    elif(optim_name == "RAdam"): optimizer = optim.RAdam(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d)
     elif(optim_name == "SGD"): optimizer = optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=weight_d, nesterov=True)
     else: optimizer = optim.Adam(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d) # 기본값은 Adam
 

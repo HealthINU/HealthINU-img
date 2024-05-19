@@ -74,16 +74,22 @@ def findImages(keyword, url, url_mod):
         last_height = new_height
     
     # 이미지 리스트
-    #images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
+    images = driver.find_elements(By.CSS_SELECTOR, ".rg_i.Q4LuWd")
 
-    images = driver.find_elements(By.CSS_SELECTOR, ".YQ4gaf")
+    images = driver.find_elements(
+        By.XPATH,
+        "//img[contains(@class, 'YQ4gaf') and not(contains(@class, 'zr758c'))]",  # Change it yourself, filter out small pictures, like pictures, etc.
+    )
+
+    #images = driver.find_elements(By.CSS_SELECTOR, ".YQ4gaf")
+    #images = driver.find_elements(By.CSS_SELECTOR, 'img.rg_i.Q4LuWd')
     print(f"Found {len(images)} images")
 
     # images가 비어있을 경우 위 코드를 다시 실행
     if not images:
         print("No images found, retrying...")
         driver.close()
-        time.sleep(2)
+        time.sleep(0.5)
         return 1
     
     # 이미지 마다 반복
@@ -91,14 +97,14 @@ def findImages(keyword, url, url_mod):
     count = 1
     
     for image in prograss_bar:
-        if(count % 2 ==0): # 임시 조치 (2개씩 받는 이슈 해결 필요)
+        '''if(count % 2 ==0): # 임시 조치 (2개씩 받는 이슈 해결 필요)
             image.click()
             time.sleep(1)
             count = count + 1
-            continue
+            continue'''
         try:
             image.click()
-            time.sleep(3)
+            time.sleep(2.5)
 
             # 이미지 URL 추출 (src)
             imgUrl = driver.find_element(
@@ -110,13 +116,14 @@ def findImages(keyword, url, url_mod):
             opener = urllib.request.build_opener()
             opener.addheaders = [
                 ('User-Agent',
-                'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
             ]
             urllib.request.install_opener(opener)
 
             # 이미지 파일 저장
             urllib.request.urlretrieve(imgUrl, f'{dir}{keyword}_{str(count)}.jpg')
             #print(imgUrl)
+            opener.close()
             count = count + 1
 
         except Exception as e:

@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, optim_name="Adam", isFixedSeed=True, isFreeze=True):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, weight_d=0, optim_name="Adam", isFixedSeed=True, isFreeze=True):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -260,8 +260,9 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     # 옵티마이저에는 model.parameters()를 지정해야 함
     # 학습률 (learning rate)은 기본은 0.0001로 설정
     lr=set_lr
-    if(optim_name == "Adam"): optimizer = optim.Adam(model.parameters(), lr)
-    elif(optim_name == "SGD"): optimizer = optim.SGD(model.parameters(), lr)
+    if(optim_name == "Adam"): optimizer = optim.Adam(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d)
+    elif(optim_name == "AdamW"): optimizer = optim.AdamW(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d)
+    elif(optim_name == "SGD"): optimizer = optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=weight_d, nesterov=True)
     else: optimizer = optim.Adam(model.parameters(), lr) # 기본값은 Adam
 
     with open(s, "a") as file:

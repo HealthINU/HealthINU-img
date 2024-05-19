@@ -1,8 +1,11 @@
-bench_press_machine
 chest_press_machine
-hip_abduction_machine
-lat_pull_down_machine
-leg_extension_machine
 leg_press_machine
-pec_deck_fly_machine
+leg_extension_machine
+garbage
+bench_press_machine
+hip_abduction_machine
 shoulder_press_machine
+pec_deck_fly_machine
+chinning_dipping_machine
+seated_row_machine
+lat_pull_down_machine

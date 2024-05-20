@@ -279,6 +279,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
 
     with open(s, "a") as file:
         file.write("Learning Rate : {} \n".format(lr))
+        file.write("Weight Decay : {} \n".format(weight_d))
         file.write("Total Epochs : {} \n".format(num_epochs))
         file.write("--------------------------------------\n")
 

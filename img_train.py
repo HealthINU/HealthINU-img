@@ -403,18 +403,15 @@ def model_train(model, data_loader, loss_fn, optimizer, device, scheduler=None):
     corr = 0
     
     # 예쁘게 Progress Bar를 출력하면서 훈련 상태를 모니터링 하기 위하여 tqdm으로 래핑
-    prograss_bar = tqdm(data_loader)
+    progress_bar = tqdm(data_loader, desc="Training")
     
     # mini-batch 학습을 시작
-    for img, lbl in prograss_bar:
+    for img, lbl in progress_bar:
         # image, label 데이터를 device에 올림
         img, lbl = img.to(device), lbl.to(device)
         
         # 누적 Gradient를 초기화함
-        if(scheduler is not None):
-            scheduler.zero_grad()
-        else:
-            optimizer.zero_grad()
+        optimizer.zero_grad()
         
         # Forward Propagation을 진행하여 결과 얻기
         output = model(img)
@@ -426,10 +423,7 @@ def model_train(model, data_loader, loss_fn, optimizer, device, scheduler=None):
         loss.backward()
         
         # 계산된 Gradient를 업데이트함
-        if(scheduler is not None):
-            scheduler.step()
-        else:
-            optimizer.step()
+        optimizer.step()
         
         # output의 max(dim=1)은 max probability와 max index를 반환함
         # max probability는 무시하고, max index는 pred에 저장하여 label 값과 대조하여 정확도를 도출함
@@ -446,6 +440,10 @@ def model_train(model, data_loader, loss_fn, optimizer, device, scheduler=None):
         
     # 누적된 정답수를 전체 개수로 나누어 주면 정확도가 산출됨
     acc = corr / len(data_loader.dataset)
+    
+    # 스케줄러가 있다면 에포크가 끝난 후에 학습률을 업데이트함
+    if scheduler is not None:
+        scheduler.step()
     
     # 평균 손실(loss)과 정확도를 반환
     # train_loss, train_acc

@@ -33,7 +33,7 @@ def main():
         # isFixedSeed: 시드 고정 여부, isFreeze: 미세 조정을 위한 레이어 고정 여부
         isFixedSeed       = False
         isFreeze          = False 
-        isScheduler=False
+        isScheduler       = True
 
         print("이미지 학습 시작")
 

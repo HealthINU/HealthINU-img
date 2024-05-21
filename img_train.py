@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, weight_d=0, optim_name="Adam", isFixedSeed=True, isFreeze=True):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, weight_d=0, optim_name="Adam", isFixedSeed=True, isFreeze=True, isScheduler=False, model_set = "resnet101"):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -202,7 +202,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
         transforms.CenterCrop((224, 224)),      # 중앙 Crop
         transforms.RandomHorizontalFlip(0.5),   # 50% 확률로 Horizontal Flip
         transforms.RandomRotation(15),          # 랜덤 15도 회전
-        transforms.ToTensor(), 
+        transforms.ToTensor(),                  # FloatTensor 로 변환
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
     test_transform = transforms.Compose([
@@ -227,7 +227,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     
     # ResNet 모델 생성
     # Convolutional layer - "필터"는 이미지를 통과하여 한 번에 몇 Pixel(NxN)을 스캔하고 각 형상이 속하는 클래스를 예측하는 형상 맵을 만듦
-    model_set = "resnet101"
+    
 
     if(model_set=="resnet101"):
         model = models.resnet101(weights="DEFAULT") 
@@ -266,8 +266,12 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     elif(optim_name == "SGD"): optimizer = optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=weight_d, nesterov=True)
     else: optimizer = optim.Adam(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d) # 기본값은 Adam
 
+    if(isScheduler):
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+
     with open(s, "a") as file:
         file.write("Optimizer : {} \n".format(optim_name))
+        file.write("Step Scheduler : {} \n".format(isScheduler))
 
     # 손실함수(loss function)을 지정
     # Multi-Class Classification 이기 때문에 CrossEntropy 손실을 지정함
@@ -297,7 +301,10 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
         isImproved = False
 
         # 훈련 손실과 정확도를 반환
-        train_loss, train_acc = model_train(model, train_loader, loss_fn, optimizer, device)
+        if(isScheduler):
+            train_loss, train_acc = model_train(model, train_loader, loss_fn, optimizer, device, scheduler)
+        else:
+            train_loss, train_acc = model_train(model, train_loader, loss_fn, optimizer, device)
 
         # 검증 손실과 검증 정확도를 반환
         val_loss, val_acc = model_eval(model, test_loader, loss_fn, device)   
@@ -387,7 +394,7 @@ class CustomDataset(Dataset):
         return img, lbl
 
 
-def model_train(model, data_loader, loss_fn, optimizer, device):
+def model_train(model, data_loader, loss_fn, optimizer, device, scheduler=None):
     # 모델을 훈련모드로 설정, training mode 일 때 Gradient 가 업데이트 됨, 반드시 train()으로 모드 변경을 해야 함
     model.train()
     
@@ -404,7 +411,10 @@ def model_train(model, data_loader, loss_fn, optimizer, device):
         img, lbl = img.to(device), lbl.to(device)
         
         # 누적 Gradient를 초기화함
-        optimizer.zero_grad()
+        if(scheduler is not None):
+            scheduler.zero_grad()
+        else:
+            optimizer.zero_grad()
         
         # Forward Propagation을 진행하여 결과 얻기
         output = model(img)
@@ -416,7 +426,10 @@ def model_train(model, data_loader, loss_fn, optimizer, device):
         loss.backward()
         
         # 계산된 Gradient를 업데이트함
-        optimizer.step()
+        if(scheduler is not None):
+            scheduler.step()
+        else:
+            optimizer.step()
         
         # output의 max(dim=1)은 max probability와 max index를 반환함
         # max probability는 무시하고, max index는 pred에 저장하여 label 값과 대조하여 정확도를 도출함

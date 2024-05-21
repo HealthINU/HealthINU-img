@@ -61,7 +61,7 @@ def fix_seed():
 
 
 # 학습
-def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, weight_d=0, optim_name="Adam", isFixedSeed=True, isFreeze=True, isScheduler=False, model_set = "resnet101"):
+def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size = 32, workers=8, early_patience=0, weight_d=0, optim_name="Adam", isFixedSeed=True, isFreeze=True, isScheduler=False, step_size=10, model_set = "resnet101"):
     # 로그 폴더 생성
     if not os.path.exists('log'):
         os.makedirs('log')
@@ -267,7 +267,7 @@ def train_set(filepath, isColab=False, set_epochs=30, set_lr=0.0001, batch_size 
     else: optimizer = optim.Adam(model.parameters(), lr, betas=(0.9, 0.999), eps=1e-8, weight_decay=weight_d) # 기본값은 Adam
 
     if(isScheduler):
-        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
+        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.5)
 
     with open(s, "a") as file:
         file.write("Optimizer : {} \n".format(optim_name))

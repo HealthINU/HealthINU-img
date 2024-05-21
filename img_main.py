@@ -20,27 +20,29 @@ def main():
         # 학습 파라미터 설정
         # epochs: 학습 횟수, learning_rate: 학습률, batch_size: 배치 크기, num_workers: 데이터 로드에 사용할 프로세스 수
         epochs            = 50
-        learning_rate     = 0.0001
+        learning_rate     = 0.0002
         batch_size        = 32
         num_workers       = 2
 
         # early_patience: 조기 종료를 위한 기다리는 횟수, optimizer: 최적화 알고리즘, weight_decay: 가중치 감쇠
         early_patience    = 15
-        optimizer         = "Adam" # "Adam" or "AdamW" or "RAdam" or "SGD
-        weight_decay      = 0
+        optimizer         = "AdamW" # "Adam" or "AdamW" or "RAdam" or "SGD
+        weight_decay      = 1e-3
+        model_set = "resnet101"
 
         # isFixedSeed: 시드 고정 여부, isFreeze: 미세 조정을 위한 레이어 고정 여부
         isFixedSeed       = False
         isFreeze          = False 
+        isScheduler=False
 
         print("이미지 학습 시작")
 
         # 2번째꺼는 코랩이 아니라서 False
-        train_set(".\\dataset", False, epochs, learning_rate, batch_size, num_workers, early_patience, weight_decay, optimizer, isFixedSeed, isFreeze)
+        train_set(".\\dataset", False, epochs, learning_rate, batch_size, num_workers, early_patience, weight_decay, optimizer, isFixedSeed, isFreeze, isScheduler, model_set)
 
         # 학습 후 현재시간 가져옴
         from datetime import datetime 
-        s = datetime.now().strftime("models/model-pretrained_%Y%m%d_%H%M%S.pth")
+        s = datetime.now().strftime("models/model-pretrained_windows_%Y%m%d_%H%M%S.pth")
 
         # 현재 model-pretrained.pth 모델을 복사해서 s로 된 이름으로 저장
         if not os.path.exists("models"):
